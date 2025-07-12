@@ -110,27 +110,45 @@ USING (customer_id)
 GROUP BY cus.customer_id, cus.first_name, cus.last_name;												
 
 # 11. Encuentra la cantidad total de películas alquiladas por categoría y muestra el nombre de la categoría junto con el recuento de alquileres.
+# Coneccion entre tablas para llegar de rental a category (rental/inventory/film/film_category/category
 
-SELECT * 									    # Query para explorar la tabla 
-FROM rental;
+SELECT * 									    # Query para explorar la tabla (inventory_id)
+FROM rental
+LIMIT 20;					
 
-SELECT *										# Query ara explorar la tabla 
-FROM film; 						
+SELECT *										# Query ara explorar la tabla (category_id, name)
+FROM category
+LIMIT 20;
 
-SELECT *										# Query ara explorar la tabla - category_id
-FROM category;
+SELECT *										# Query ara explorar la tabla (conecta la tabla film con category)
+FROM film_category
+LIMIT 20;
 
-SELECT cat.name, COUNT(cat.name)		        # Query para encuentrar la cantidad total de películas alquiladas por categoría
+
+# JOINS
+SELECT ren.rental_id, inv.film_id
 FROM rental AS ren
-INNER JOIN category AS cat
-ON 
+INNER JOIN inventory AS INV 
+USING (inventory_id)
+INNER JOIN film AS fil 
+USING (film_id)
+INNER JOIN film_category AS filcat 
+USING (film_id)
+INNER JOIN category AS cat 
+USING (category_id);
+
+# Query final:
+SELECT cat.name AS categoria, COUNT(ren.rental_id) AS total_alquileres
+FROM rental AS ren
+INNER JOIN inventory AS inv 
+USING (inventory_id)
+INNER JOIN film AS fil 
+USING (film_id)
+INNER JOIN film_category AS filcat 
+USING (film_id)
+INNER JOIN category AS cat 
+USING (category_id)
 GROUP BY cat.name;
-
-
-
-
-
-
 
 # 12. Encuentra el promedio de duración de las películas para cada clasificación de la tabla `film` y muestra la clasificación junto con el promedio de duración.
 
@@ -185,11 +203,11 @@ INNER JOIN film_category
 USING (film_id)
 INNER JOIN category AS cat
 USING (Category_id)
-WHERE cat.name = 'comedy';
+WHERE cat.name = 'Comedy';
 
 # 18. Muestra el nombre y apellido de los actores que aparecen en más de 14 películas.
 
-SELECT a.first_name, a.last_name
+SELECT a.first_name, a.last_name						# Join de actor a film_actor como una 'puente' para llegar a la tabla film
 FROM actor AS a
 INNER JOIN film_actor
 USING (actor_id)
@@ -199,31 +217,144 @@ GROUP BY a.first_name, a.last_name
 HAVING COUNT(film.film_id) >= 14; 
 
 # 19. Encuentra el título de todas las películas que son "R" y tienen una duración mayor a 2 horas en la tabla `film`.
+# Entiendo que en rating/clasificacion hay un acronimo "R" que signfica restricted. De esta forma, la siguiente query son de todas las peliculas que son restricted con duraccion (length) mayor de 2h (120 min)
 
-
-
+SELECT title AS Películas, length AS Duración, rating AS Restricted 	
+FROM film 
+WHERE length > 120
+AND rating = 'R';
 
 # 20. Encuentra las categorías de películas que tienen un promedio de duración superior a 120 minutos y muestra el nombre de la categoría junto con el promedio de duración.
+# GROUP BY category las que tienen promedio (AVG) > 120 min
 
-21. Encuentra los actores que han actuado en al menos 5 películas y muestra el nombre del actor junto con la cantidad de películas en las que han actuado.
+# Paso 1
+SELECT fil.title AS 'Películas', fil.length AS Duración, cat.name AS "Categoría"	# Primero hice una lista de los filmes individualmente que tienen duraccion +120min con su duraccion y nombre de categoria 						
+FROM film AS fil
+INNER JOIN film_category 
+USING (film_id)
+INNER JOIN category AS cat
+USING (Category_id)
+WHERE length > 120;
 
-22. Encuentra el título de todas las películas que fueron alquiladas por más de 5 días. Utiliza una subconsulta para encontrar los rental_ids con una duración superior a 5 días y luego selecciona las películas correspondientes.
+# Query final 
+SELECT AVG(fil.length) AS Duración, cat.name AS "Categoría"							# Despues, calcule la media de duraccion por categoria incluindo el AVG en length 			
+FROM film AS fil																	# Por fin, agrupe las categorias con GROUP BY Categoria (cat.name), filtre com HAVING los promedios superiores a 120 y 
+INNER JOIN film_category 															# Removi el fil.title del SELECT ya que el GROUP BY agrupara por cat.name AS "Categoría" y no por filme
+USING (film_id)
+INNER JOIN category AS cat
+USING (Category_id)
+GROUP BY cat.name
+HAVING AVG(fil.length) > 120;
 
-23. Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la categoría "Horror". Utiliza una subconsulta para encontrar los actores que han actuado en películas de la categoría "Horror" y luego exclúyelos de la lista de actores.
+# 21. Encuentra los actores que han actuado en al menos 5 películas y muestra el nombre del actor junto con la cantidad de películas en las que han actuado.
 
-24. Encuentra el título de las películas que son comedias y tienen una duración mayor a 180 minutos en la tabla `film`.
+SELECT act.first_name, act.last_name, COUNT(fil.title) AS cantidad_peliculas     # Queremos que se enseñe nombre, apellidos y que se cuentem la cantidad de peliculas, para que en el futuro filtremos por los actores que han actuado en al menos 5 películas
+FROM actor AS act
+INNER JOIN film_actor														   	 # Hay que hacer un JOIN pues no hay una sola tabla que tenga los nombres de actores y nombres de filmes
+USING(actor_id)
+INNER JOIN film AS fil
+USING(film_id)
+GROUP BY act.first_name, act.last_name										   	# Agrupamos por actores que estejam relacionados a 5 titulos de peliculas minimo, o sea que han actuado en al menos 5 películas
+HAVING COUNT(fil.title) >= 5;
+
+# 22. Encuentra el título de todas las películas que fueron alquiladas por más de 5 días. Utiliza una subconsulta para encontrar los rental_ids con una duración superior a 5 días y luego selecciona las películas correspondientes.
+# Utilice inventory_id pues es la tabla intermedia entre rental y film
+# Estaba en duda si el rental_duration from film era los dias que las peliculas fueron aquilladas o que podrian ser aquilladas asi que use DATEDIFF(return_date, rental_date) en la tabla rental
+
+#Paso 1
+SELECT * 			# usado para explorar la tabla 
+FROM rental;
+
+# Paso 3
+# DATEDIFF(data_final, data_inicial) - funcion nactiva del SQL que calcula la diferencia entre dos fechas em numero de dias
+SELECT rental_id, rental_date, return_date, DATEDIFF(return_date, rental_date) AS dias_alquiler
+FROM rental
+WHERE DATEDIFF(return_date, rental_date) > 5;
+
+# Paso 4
+# Cada rental tiene un inventory_id, en comum con la tabla inventory, que tiene un film_id en comum con la tabla film donde estan los titulos (verificado en el resumen de tablas y revisado en el diagrama) sin embargo el enunciado pide para no usar JOIN y si subconsulta
+
+SELECT inventory_id, dias_alquiler
+FROM (
+		SELECT inventory_id, 
+		rental_date, return_date, 
+        DATEDIFF(return_date, rental_date) AS dias_alquiler
+		FROM rental
+		WHERE DATEDIFF(return_date, rental_date) > 5) as day_counts; # Es necesario es las subcomsultas un alias 
+
+# Paso 5, completar la consulta 
+
+SELECT film_id
+FROM inventory 
+WHERE inventory_id IN (
+		SELECT inventory_id                # se saco dias_aquiler del SELECT pues ya esta filtrado 
+		FROM rental
+		WHERE DATEDIFF(return_date, rental_date) > 5);
+        
+# Paso 6
+SELECT * FROM film
+WHERE film_id IN (1);
+
+# Query final
+
+SELECT title 
+FROM film
+WHERE film_id IN (SELECT film_id
+FROM inventory 
+WHERE inventory_id IN (
+		SELECT inventory_id              
+		FROM rental
+		WHERE DATEDIFF(return_date, rental_date) > 5));
 
 
+# 23. Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la categoría "Horror". 
+#Utiliza una subconsulta para encontrar los actores que han actuado en películas de la categoría "Horror" y luego exclúyelos de la lista de actores.
 
-### SQL
-- Dominar las queries básicas: SELECT; UPDATE; DELETE; INSERT \*
-- Dominar las funciones `groupby`, `where` y `having``. \*
-- Dominar el uso de `joins` (incluyendo `union` y `union all``)\*
-- Dominar el uso de subconsultas. \*
-- Dominar el uso de las subconsultas correlacionadas
+# Paso 1: actores que actuan en horror 
+SELECT actor.first_name, actor.last_name                     
+FROM actor
+JOIN film_actor 
+USING (actor_id)
+JOIN film 
+USING (film_id)
+JOIN film_category 
+USING (film_id)
+JOIN category 
+USING (category_id)
+WHERE category.name = 'Horror'
+GROUP BY actor.actor_id;
 
-### Otros criterios a tener en cuenta
+# Paso 2: Buscar los actores fuera de esta lista
+SELECT actor_id,first_name, last_name
+FROM actor
+WHERE actor_id NOT IN (subconsulta);
 
-- El repositorio de GitHub debe tener README explicando muy brevemente cómo arrancar el proyecto.
+# Query final:
+SELECT actor_id,first_name, last_name
+FROM actor
+WHERE actor_id NOT IN (SELECT actor_id                        # Se cambio a actor_id pues no acpeta dos columnas first_name, last_name
+						FROM actor
+						JOIN film_actor 
+						USING (actor_id)
+						JOIN film 
+						USING (film_id)
+						JOIN film_category 
+						USING (film_id)
+						JOIN category 
+						USING (category_id)
+						WHERE category.name = 'Horror'
+						GROUP BY actor.actor_id);
+
+# 24. Encuentra el título de las películas que son comedias y tienen una duración mayor a 180 minutos en la tabla `film`.
+
+SELECT fil.title, cat.name, fil.length								
+FROM film AS fil
+INNER JOIN film_category 
+USING (film_id)
+INNER JOIN category AS cat
+USING (Category_id)
+WHERE cat.name = 'Comedy'
+AND length >= 180;
+
 
 
