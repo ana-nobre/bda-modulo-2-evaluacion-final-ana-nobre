@@ -1,4 +1,4 @@
-# Final Assessment – SQL Module 2 with Sakila Database (Adalab)
+# Final Assessment – SQL Module with Sakila Database (Adalab)
 
 This repository presents the solutions developed during the **live technical assessment** of the SQL module, using the **Sakila** relational database. It features 24 business-driven SQL exercises that reflect real-world business scenarios and the technical depth expected in SQL-oriented roles.
 
@@ -108,7 +108,7 @@ GROUP BY cus.customer_id, cus.first_name, cus.last_name;
 ```
 ├── Queries-with-comments-en(translated).sql   # Translated queries (with inline comments)
 ├── Queries-with-comments-es(original).sql     # Original queries (in Spanish)
-├── SQL-module2-instructions-en.md             # Instructions translated to English
+├── SQL-Final-Assessment-Instructions.md       # Instructions translated to English
 ├── Sakila-er-diagram.png                      # ER diagram (used as reference)
 └── README.md                                  # Project overview (this file)
 ```

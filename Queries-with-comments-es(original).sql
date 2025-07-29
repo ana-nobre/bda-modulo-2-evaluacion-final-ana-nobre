@@ -1,4 +1,4 @@
-# Modulo 2: Teste Final
+# Modulo SQL: Teste Final
 
 USE Sakila;
 
