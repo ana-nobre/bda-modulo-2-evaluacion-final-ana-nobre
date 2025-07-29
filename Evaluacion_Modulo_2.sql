@@ -63,12 +63,11 @@ WHERE last_name REGEXP 'Gibson';
 
 SELECT actor_id, first_name, last_name		# SELECT extrae los datos de las columnas first_name y las_name mientras WHERE filtra la condicion actor_id >= 10 AND actor_id <= 25
 FROM actor
-WHERE actor_id >= 10 AND actor_id <= 25;
+WHERE actor_id >= 10 AND actor_id <= 25;    # Despues de verificar que los actor_id cumplian la condicion deseada, saque esta columna del select para dejar solamente lo que se pedia, los nombres y apellidos 
 
-
-SELECT first_name, last_name				# Despues de verificar que los actor_id cumplian la condicion deseada, saque esta columna del select para dejar solamente lo que se pedia, los nombres y apellidos 
+SELECT first_name, last_name                # Para quedar mas simples, se puede ultilizar el BETWEEN
 FROM actor
-WHERE actor_id >= 10 AND actor_id <= 25;
+WHERE actor_id BETWEEN 10 AND 25;
 
 # 8. Encuentra el título de las películas en la tabla `film` que no sean ni "R" ni "PG-13" ni "G" en cuanto a su clasificación.
 
@@ -123,7 +122,6 @@ LIMIT 20;
 SELECT *										# Query ara explorar la tabla (conecta la tabla film con category)
 FROM film_category
 LIMIT 20;
-
 
 # JOINS
 SELECT ren.rental_id, inv.film_id
@@ -184,10 +182,16 @@ OR description LIKE '%cat%';
 # 15. Hay algún actor o actriz que no aparezca en ninguna película en la tabla `film_actor`.
 
 SELECT act.actor_id, act.first_name, act.last_name					# Como queremos comparar dos columnas y verificar si uno de los elementos (actor/actriz) no aparece en la conectado en la lista completa de peliculas, el LEFT JOIN es lo mas indicado,
-FROM actor AS act													# pues traje todos los artistas  aunqye ni tengan film_id (pelicula)
+FROM actor AS act													# pues traje todos los artistas  aunque no tengan film_id (pelicula)
 LEFT JOIN film_actor AS fil											# Respuesta: No hay ningun actor o actriz que no aparezca en ninguna película en la tabla `film_actor`
 USING (actor_id)
 WHERE fil.actor_id IS NULL;
+
+# Tambien pordria tener sido resuelto con una subconsulta
+SQL
+SELECT actor.first_name, actor.last_name
+FROM actor
+WHERE actor_id NOT IN (SELECT actor_id FROM film_actor);
 
 # 16. Encuentra el título de todas las películas que fueron lanzadas entre el año 2005 y 2010.
 
@@ -265,47 +269,21 @@ HAVING COUNT(fil.title) >= 5;
 SELECT * 			# usado para explorar la tabla 
 FROM rental;
 
-# Paso 3
+# Paso 2
 # DATEDIFF(data_final, data_inicial) - funcion nactiva del SQL que calcula la diferencia entre dos fechas em numero de dias
 SELECT rental_id, rental_date, return_date, DATEDIFF(return_date, rental_date) AS dias_alquiler
 FROM rental
 WHERE DATEDIFF(return_date, rental_date) > 5;
 
-# Paso 4
-# Cada rental tiene un inventory_id, en comum con la tabla inventory, que tiene un film_id en comum con la tabla film donde estan los titulos (verificado en el resumen de tablas y revisado en el diagrama) sin embargo el enunciado pide para no usar JOIN y si subconsulta
-
-SELECT inventory_id, dias_alquiler
-FROM (
-		SELECT inventory_id, 
-		rental_date, return_date, 
-        DATEDIFF(return_date, rental_date) AS dias_alquiler
-		FROM rental
-		WHERE DATEDIFF(return_date, rental_date) > 5) as day_counts; # Es necesario es las subcomsultas un alias 
-
-# Paso 5, completar la consulta 
-
-SELECT film_id
-FROM inventory 
-WHERE inventory_id IN (
-		SELECT inventory_id                # se saco dias_aquiler del SELECT pues ya esta filtrado 
-		FROM rental
-		WHERE DATEDIFF(return_date, rental_date) > 5);
-        
-# Paso 6
-SELECT * FROM film
-WHERE film_id IN (1);
-
 # Query final
-
-SELECT title 
+SELECT title
 FROM film
-WHERE film_id IN (SELECT film_id
-FROM inventory 
-WHERE inventory_id IN (
-		SELECT inventory_id              
-		FROM rental
-		WHERE DATEDIFF(return_date, rental_date) > 5));
-
+WHERE film_id IN (
+SELECT DISTINCT i.film_id
+FROM inventory as i
+JOIN rental as r ON i.inventory_id = r.inventory_id
+WHERE DATEDIFF(return_date, rental_date) > 5
+);
 
 # 23. Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la categoría "Horror". 
 #Utiliza una subconsulta para encontrar los actores que han actuado en películas de la categoría "Horror" y luego exclúyelos de la lista de actores.
@@ -344,6 +322,24 @@ WHERE actor_id NOT IN (SELECT actor_id                        # Se cambio a acto
 						USING (category_id)
 						WHERE category.name = 'Horror'
 						GROUP BY actor.actor_id);
+
+Query final con CTEs presentada durante la entrevista tecnica
+# CTEs 
+WITH subconsulta AS (SELECT actor_id
+						FROM actor
+						JOIN film_actor
+						USING (actor_id)
+						JOIN film
+						USING (film_id)
+						JOIN film_category
+						USING (film_id)
+						JOIN category
+						USING (category_id)
+						WHERE category.name = 'Horror'
+						GROUP BY actor.actor_id)
+SELECT actor_id,first_name, last_name
+FROM actor
+WHERE actor_id NOT IN (SELECT actor_id FROM subconsulta); 
 
 # 24. Encuentra el título de las películas que son comedias y tienen una duración mayor a 180 minutos en la tabla `film`.
 
