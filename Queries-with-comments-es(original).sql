@@ -24,6 +24,11 @@ SELECT title 					# Si solamente queremos los nombres de las peliculas con esta 
 FROM film 
 WHERE rating = "NC-17";
 
+
+SELECT title, rating			
+FROM film 
+WHERE rating IN ('NC-17', 'PG-13');
+
 # 3. Encuentra el título y la descripción de todas las películas que contengan la cadena de caracteres "amazing" en su descripción:
 
 SELECT *									# Query para explorar la tabla - se identifica la columna description
@@ -93,6 +98,11 @@ SELECT rating, COUNT(title) 				# Se agrega el COUNT para que se conte la cantid
 FROM film
 GROUP BY rating;
 
+SELECT rating, COUNT(title) 				
+FROM film
+GROUP BY rating
+HAVING COUNT(title) > 200;
+
 # 10. Encuentra la cantidad total de películas alquiladas por cada cliente y muestra el ID del cliente, su nombre y apellido junto con la cantidad de películas alquiladas.
 
 SELECT * 									# Query para explorar la tabla - se identifica customer_id como valor en comum con la tabla customer, donde sacaremos sus nombres y apellidos
@@ -109,7 +119,7 @@ USING (customer_id)
 GROUP BY cus.customer_id, cus.first_name, cus.last_name;												
 
 # 11. Encuentra la cantidad total de películas alquiladas por categoría y muestra el nombre de la categoría junto con el recuento de alquileres.
-# Coneccion entre tablas para llegar de rental a category (rental/inventory/film/film_category/category
+# Coneccion entre tablas para llegar de rental a category (rental/inventory/film/film_category/category) -> Ver diagrama
 
 SELECT * 									    # Query para explorar la tabla (inventory_id)
 FROM rental
@@ -123,7 +133,7 @@ SELECT *										# Query ara explorar la tabla (conecta la tabla film con categ
 FROM film_category
 LIMIT 20;
 
-# JOINS
+# JOINS   -    las joins nos ayudan a combinar datos de varias tablas para obtener una vista completa y útil
 SELECT ren.rental_id, inv.film_id
 FROM rental AS ren
 INNER JOIN inventory AS INV 
@@ -166,15 +176,15 @@ WHERE film.title = 'Indian Love';
 
 # 14. Muestra el título de todas las películas que contengan la cadena de caracteres "dog" o "cat" en su descripción.
 
-SELECT title, description											# Muestra el título y la descripcion de todas las películas
+SELECT title, description	   # Muestra el título y la descripcion de todas las películas
 FROM film;
 
-SELECT title, description											# WHERE inclui una condicion y REGEX la cadena de carecteres qye coincide con "dog" o "cat" en su descripción. 
-FROM film															# No podriamos usar el IN, pues este compara si el valor es exactamente igual y lo que queremos es encontrar estas cadenas en cualquier parte de la descripcion
+SELECT title, description	   # WHERE inclui una condicion y REGEX la cadena de carecteres que coincide con "dog" o "cat" en su descripción. 
+FROM film					   # No podriamos usar el IN/=, pues estes comparan si el valor es exactamente igual y lo que queremos es encontrar estas cadenas en cualquier parte de la descripcion
 WHERE description REGEXP 'dog' 
 OR description REGEXP 'cat';
 
-SELECT title, description											# Sin embargo pordriamos tambien utilizar LIKE con otra sintaxe
+SELECT title, description	   # Sin embargo pordriamos tambien utilizar LIKE con otra sintaxe
 FROM film															
 WHERE description LIKE '%dog%' 
 OR description LIKE '%cat%';
@@ -201,7 +211,7 @@ WHERE release_year >= 2005 AND release_year <= 2010;
 
 # 17. Encuentra el título de todas las películas que son de la misma categoría que "Comedy".
 
-SELECT fil.title, cat.name								# Join de film a film_category como una 'puente' para llegar a la tabla category
+SELECT fil.title, cat.name			# Join de film a film_category como una 'puente' para llegar a la tabla category 
 FROM film AS fil
 INNER JOIN film_category 
 USING (film_id)
@@ -211,14 +221,14 @@ WHERE cat.name = 'Comedy';
 
 # 18. Muestra el nombre y apellido de los actores que aparecen en más de 14 películas.
 
-SELECT a.first_name, a.last_name						# Join de actor a film_actor como una 'puente' para llegar a la tabla film
+SELECT a.first_name, a.last_name			# Join de actor a film_actor como una 'puente' para llegar a la tabla film
 FROM actor AS a
 INNER JOIN film_actor
 USING (actor_id)
 INNER JOIN film
 USING (film_id)
 GROUP BY a.first_name, a.last_name 
-HAVING COUNT(film.film_id) >= 14; 
+HAVING COUNT(film.film_id) >= 14;          # COUNT va contar los id unicos de film (película)
 
 # 19. Encuentra el título de todas las películas que son "R" y tienen una duración mayor a 2 horas en la tabla `film`.
 # Entiendo que en rating/clasificacion hay un acronimo "R" que signfica restricted. De esta forma, la siguiente query son de todas las peliculas que son restricted con duraccion (length) mayor de 2h (120 min)
@@ -241,9 +251,9 @@ USING (Category_id)
 WHERE length > 120;
 
 # Query final 
-SELECT AVG(fil.length) AS Duración, cat.name AS "Categoría"							# Despues, calcule la media de duraccion por categoria incluindo el AVG en length 			
-FROM film AS fil																	# Por fin, agrupe las categorias con GROUP BY Categoria (cat.name), filtre com HAVING los promedios superiores a 120 y 
-INNER JOIN film_category 															# Removi el fil.title del SELECT ya que el GROUP BY agrupara por cat.name AS "Categoría" y no por filme
+SELECT AVG(fil.length) AS Duración, cat.name AS "Categoría"		# Despues, calcule la media de duraccion por categoria incluindo el AVG en length 			
+FROM film AS fil												# Por fin, agrupe las categorias con GROUP BY Categoria (cat.name), filtre com HAVING los promedios superiores a 120 y 
+INNER JOIN film_category 									    # Removi el fil.title del SELECT ya que el GROUP BY agrupara por cat.name AS "Categoría" y no por filme
 USING (film_id)
 INNER JOIN category AS cat
 USING (Category_id)
@@ -254,11 +264,11 @@ HAVING AVG(fil.length) > 120;
 
 SELECT act.first_name, act.last_name, COUNT(fil.title) AS cantidad_peliculas     # Queremos que se enseñe nombre, apellidos y que se cuentem la cantidad de peliculas, para que en el futuro filtremos por los actores que han actuado en al menos 5 películas
 FROM actor AS act
-INNER JOIN film_actor														   	 # Hay que hacer un JOIN pues no hay una sola tabla que tenga los nombres de actores y nombres de filmes
+INNER JOIN film_actor						 # Hay que hacer un JOIN pues no hay una sola tabla que tenga los nombres de actores y nombres de filmes
 USING(actor_id)
 INNER JOIN film AS fil
 USING(film_id)
-GROUP BY act.first_name, act.last_name										   	# Agrupamos por actores que estejam relacionados a 5 titulos de peliculas minimo, o sea que han actuado en al menos 5 películas
+GROUP BY act.first_name, act.last_name		# Agrupamos por actores que esten relacionados a 5 titulos de peliculas minimo, o sea que han actuado en al menos 5 películas
 HAVING COUNT(fil.title) >= 5;
 
 # 22. Encuentra el título de todas las películas que fueron alquiladas por más de 5 días. Utiliza una subconsulta para encontrar los rental_ids con una duración superior a 5 días y luego selecciona las películas correspondientes.
@@ -324,6 +334,7 @@ WHERE actor_id NOT IN (SELECT actor_id                        # Se cambio a acto
 						GROUP BY actor.actor_id);
 
 Query final con CTEs presentada durante la entrevista tecnica
+
 # CTEs 
 WITH subconsulta AS (SELECT actor_id
 						FROM actor
@@ -341,6 +352,8 @@ SELECT actor_id,first_name, last_name
 FROM actor
 WHERE actor_id NOT IN (SELECT actor_id FROM subconsulta); 
 
+# Tambien podria ser hecho con subconsulta (NOT IN SELECT DISTINCT actor_id)                       
+
 # 24. Encuentra el título de las películas que son comedias y tienen una duración mayor a 180 minutos en la tabla `film`.
 
 SELECT fil.title, cat.name, fil.length								
@@ -351,6 +364,3 @@ INNER JOIN category AS cat
 USING (Category_id)
 WHERE cat.name = 'Comedy'
 AND length >= 180;
-
-
-
