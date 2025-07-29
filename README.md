@@ -108,8 +108,8 @@ GROUP BY cus.customer_id, cus.first_name, cus.last_name;
 ```
 ├── Queries-with-comments-en(translated).sql   # Translated queries (with inline comments)
 ├── Queries-with-comments-es(original).sql     # Original queries (in Spanish)
-├── SQL-module2-instructions-en.md             # Instructions translated to English
-├── Sakila-er-diagram.png                      # ER diagram (used as reference)
+├── SQL-Final-Assessment-Instructions.md       # Instructions translated to English
+├── Sakila-EER-Diagram.png                     # ER diagram (used as reference)
 └── README.md                                  # Project overview (this file)
 ```
 
