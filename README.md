@@ -1,4 +1,4 @@
-# Final Assessment – SQL Module 2 with Sakila Database (Adalab)
+# Final Assessment – SQL Module with Sakila Database (Adalab)
 
 This repository presents the solutions developed during the **live technical assessment** of the SQL module, using the **Sakila** relational database. It features 24 business-driven SQL exercises that reflect real-world business scenarios and the technical depth expected in SQL-oriented roles.
 
@@ -23,23 +23,6 @@ This project demonstrates hands-on SQL capabilities that are highly valued by co
 
 > ✨ This README includes selected SQL examples to demonstrate real-world use of advanced techniques like CTEs, subqueries, REGEXP, and optimized JOINs, aligned with technical competencies frequently assessed in data and business roles.
 
-### 🔁 Correlated Subquery
-
-```sql
-SELECT cus.first_name, cus.last_name, SUM(p.amount) AS total_spent
-FROM customer cus
-JOIN payment p ON cus.customer_id = p.customer_id
-GROUP BY cus.customer_id
-HAVING total_spent > (
-    SELECT AVG(customer_total)
-    FROM (
-        SELECT SUM(p2.amount) AS customer_total
-        FROM payment p2
-        GROUP BY p2.customer_id
-    ) sub
-);
-```
-
 ### 🔎 REGEXP for Pattern Matching
 
 ```sql
@@ -61,9 +44,10 @@ WITH horror_actors AS (
     WHERE category.name = 'Horror'
     GROUP BY actor_id
 )
-SELECT actor_id, first_name, last_name
+SELECT actor_id,first_name, last_name
 FROM actor
-WHERE actor_id NOT IN (SELECT actor_id FROM horror_actors);
+WHERE actor_id NOT IN (SELECT actor_id FROM subconsulta
+);
 ```
 
 ### 🤝 Optimized JOINs
@@ -74,7 +58,6 @@ FROM rental ren
 INNER JOIN customer cus USING (customer_id)
 GROUP BY cus.customer_id, cus.first_name, cus.last_name;
 ```
-
 ---
 
 ## ⚙️ Getting Started
@@ -106,10 +89,9 @@ GROUP BY cus.customer_id, cus.first_name, cus.last_name;
 ## 📁 Repository Structure
 
 ```
-├── Queries-with-comments-en(translated).sql   # Translated queries (with inline comments)
 ├── Queries-with-comments-es(original).sql     # Original queries (in Spanish)
 ├── SQL-Final-Assessment-Instructions.md       # Instructions translated to English
-├── Sakila-EER-Diagram.png                     # ER diagram (used as reference)
+├── Sakila-er-diagram.png                      # ER diagram (used as reference)
 └── README.md                                  # Project overview (this file)
 ```
 
