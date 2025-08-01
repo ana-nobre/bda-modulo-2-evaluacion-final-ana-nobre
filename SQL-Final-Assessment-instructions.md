@@ -1,4 +1,4 @@
-# Final Assessment:
+# Final Assessment
 
 - Before starting, you must create a new repository using GitHub Classroom through this [link](https://classroom.github.com/a/RM1jDKL2). Once created, clone it to your computer and begin working on the exercise in the newly created folder.
 
