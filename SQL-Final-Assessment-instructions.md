@@ -1,4 +1,4 @@
-# Final Assessment Module 2: SQL
+# Final Assessment:
 
 - Before starting, you must create a new repository using GitHub Classroom through this [link](https://classroom.github.com/a/RM1jDKL2). Once created, clone it to your computer and begin working on the exercise in the newly created folder.
 
@@ -40,8 +40,6 @@ For this exercise, we will use the Sakila database we have been working with dur
 24. Find the titles of movies that are comedies and have a duration greater than 180 minutes in the `film` table.  
 
 ## Guidelines
-
-This exercise is designed to be completed individually in class, but you may ask the instructor or your classmates if you need help. They will not give you the solution directly but will provide hints to help you find it. Even though communication with peers is allowed, during the assessment you must not copy code from others or access their laptops. We trust in your responsibility.
 
 The assessment is a valuable opportunity to understand your progress, identify which topics you need to reinforce in the coming weeks, and recognize those you have already mastered. We recommend that you feel comfortable with the work you submit and refrain from submitting copied content that you do not understand.
 
