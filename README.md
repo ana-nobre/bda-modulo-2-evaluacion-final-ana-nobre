@@ -1,4 +1,4 @@
-# Final Assessment – SQL Module with Sakila Database (Adalab)
+# Final Assessment – SQL Module (Adalab)
 
 This repository presents the solutions developed during the **live technical assessment** of the SQL module, using the **Sakila** relational database. It features 24 business-driven SQL exercises that reflect real-world business scenarios and the technical depth expected in SQL-oriented roles.
 
@@ -31,7 +31,7 @@ FROM film
 WHERE description REGEXP 'amazing';
 ```
 
-### 🧱 CTE to Exclude Actors from a Specific Category
+### 🧱 CTE Used During the Live Technical Interview
 
 ```sql
 WITH horror_actors AS (
@@ -50,7 +50,7 @@ WHERE actor_id NOT IN (SELECT actor_id FROM subconsulta
 );
 ```
 
-### 🤝 Optimized JOINs
+### 🤝 Optimized JOINs for Aggregated Metrics
 
 ```sql
 SELECT cus.first_name, cus.last_name, COUNT(ren.inventory_id) AS total_rentals
@@ -103,6 +103,28 @@ GROUP BY cus.customer_id, cus.first_name, cus.last_name;
 - [MySQL REGEXP Reference](https://dev.mysql.com/doc/refman/8.0/en/regexp.html)  
 - [Common Table Expressions (CTE) – WITH Clause](https://dev.mysql.com/doc/refman/8.0/en/with.html)  
 - [JOIN Syntax and Optimization](https://dev.mysql.com/doc/refman/8.0/en/join.html)  
+
+---
+
+## 📝 Instructor Feedback
+
+> "You created a great README — congratulations! I recommend adding some sample queries to showcase your work."
+
+> "You answered the interview questions well, expressing yourself clearly and with strong vocabulary. Great job!"
+
+**Evaluation Summary**:
+- SQL Syntax: ✅ Meets objectives  
+- SQL Comments: 🌟 Outstanding  
+- Understanding of Basic Queries: 👍 Notable  
+- Use of Aggregation Functions: 🌟 Outstanding  
+- Joins: 🌟 Outstanding  
+- Subqueries and Correlated Subqueries: 👍 Notable  
+- Git Usage: 👍 Notable  
+- **Overall Rating**: **Notable**
+
+> "You solved the exercises very well. Try to improve the structure and readability of longer queries. Excellent work with `REGEXP`!"
+
+> "During the live technical interview, you presented query 23 using a CTE — great job!"
 
 ---
 
