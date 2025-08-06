@@ -21,7 +21,7 @@ This project demonstrates hands-on SQL capabilities that are highly valued by co
 
 ## 📌 Sample Queries
 
-> ✨ This README includes selected SQL examples to demonstrate real-world use of advanced techniques like CTEs, subqueries, REGEXP, and optimized JOINs, aligned with technical competencies frequently assessed in data and business roles.
+> This README includes selected SQL examples to demonstrate real-world use of advanced techniques like CTEs, subqueries, REGEXP, and optimized JOINs, aligned with technical competencies frequently assessed in data and business roles.
 
 ### 🔎 REGEXP for Pattern Matching
 
