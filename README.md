@@ -112,19 +112,19 @@ GROUP BY cus.customer_id, cus.first_name, cus.last_name;
 
 > "You answered the interview questions well, expressing yourself clearly and with strong vocabulary. Great job!"
 
-**Evaluation Summary**:
-- SQL Syntax: ✅ Meets objectives  
-- SQL Comments: 🌟 Outstanding  
-- Understanding of Basic Queries: 👍 Notable  
-- Use of Aggregation Functions: 🌟 Outstanding  
-- Joins: 🌟 Outstanding  
-- Subqueries and Correlated Subqueries: 👍 Notable  
-- Git Usage: 👍 Notable  
-- **Overall Rating**: **Notable**
-
 > "You solved the exercises very well. Try to improve the structure and readability of longer queries. Excellent work with `REGEXP`!"
 
 > "During the live technical interview, you presented query 23 using a CTE — great job!"
+
+**Evaluation Summary**:
+- SQL Syntax: Meets objectives  
+- SQL Comments: Outstanding  
+- Understanding of Basic Queries: Notable  
+- Use of Aggregation Functions: Outstanding  
+- Joins: Outstanding  
+- Subqueries and Correlated Subqueries: Notable  
+- Git Usage: Notable  
+- **Overall Rating**: **Notable**
 
 ---
 
